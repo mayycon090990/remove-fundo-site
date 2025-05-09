@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remove Fundo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background-color: #222;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background-color: #444;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .container {
+      padding: 20px;
+      text-align: center;
+    }
+    .upload-box {
+      border: 2px dashed #ccc;
+      padding: 30px;
+      margin: 20px auto;
+      width: 300px;
+      background: #fff;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Remove Fundo de Imagens</h1>
+    <p>Envie uma imagem e remova o fundo automaticamente!</p>
+  </header>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="politica.html">Política de Privacidade</a>
+    <a href="termos.html">Termos de Uso</a>
+  </nav>
+  <div class="container">
+    <div class="upload-box">
+      <input type="file" id="fileInput" accept="image/*">
+      <br>
+      <button onclick="uploadImage()">Remover Fundo</button>
+    </div>
+    <div id="result"></div>
+
+    <!-- Espaço para Anúncio -->
+    <div style="margin-top:40px;">
+      <!-- Google AdSense -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXX"
+           data-ad-slot="1234567890"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+
+  <script>
+    function uploadImage() {
+      const input = document.getElementById('fileInput');
+      if (input.files.length === 0) {
+        alert('Selecione uma imagem.');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('image', input.files[0]);
+
+      fetch('http://127.0.0.1:8000/api/remove-background', {
+        method: 'POST',
+        body: formData
+      }).then(response => response.blob())
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          document.getElementById('result').innerHTML =
+            `<h3>Resultado:</h3><img src="${url}" style="max-width:100%">`;
+        });
+    }
+  </script>
+</body>
+</html>
