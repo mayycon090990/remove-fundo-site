@@ -1,4 +1,4 @@
-
+onnxruntime
 fastapi
 uvicorn
 rembg
