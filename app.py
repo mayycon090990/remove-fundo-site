@@ -1,23 +1,30 @@
-
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+import shutil
 from rembg import remove
-import io
+from pathlib import Path
 
 app = FastAPI()
 
-# Liberar CORS para o frontend local
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.post("/api/remove-background")
-async def remove_background(image: UploadFile = File(...)):
-    input_image = await image.read()
-    output_image = remove(input_image)
-    return StreamingResponse(io.BytesIO(output_image), media_type="image/png")
+@app.get("/", response_class=HTMLResponse)
+async def root():
+    return Path("index.html").read_text()
+
+@app.post("/remover-fundo")
+async def remover_fundo(file: UploadFile = File(...)):
+    input_path = "static/input.png"
+    output_path = "static/output.png"
+
+    with open(input_path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+
+    with open(input_path, "rb") as inp:
+        result = remove(inp.read())
+
+    with open(output_path, "wb") as out:
+        out.write(result)
+
+    return FileResponse(output_path, media_type="image/png")
